@@ -38,4 +38,5 @@ message ChatMessageForReceiving {
 	Message content = 1;
 }
 
-grpcurl -plaintext -d '{"content": {"roomId": "0", "userId": "0", "text": "www"}}' localhost:8080 pb.ChatService.ChatBiStreams
+// An example on grpcurl
+// grpcurl -plaintext -d '{"content": {"roomId": "0", "userId": "0", "text": "www"}}' localhost:8080 pb.ChatService.ChatBiStreams
