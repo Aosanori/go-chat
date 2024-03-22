@@ -3,15 +3,15 @@ package main
 
 import (
 	// (一部抜粋)
-	"context"
-	"errors"
+	// "context"
+	// "errors"
 	"fmt"
-	"io"
+	// "io"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	"time"
+	// "time"
 
 	pb "backend/api/chat" // go mod init backend  一番上のパスの名前にすると吉？
 
@@ -19,13 +19,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type ChatServer struct {
-	pb.ChatServiceServer
-}
-
-func NewChatServer() ChatServer {
-	return ChatServer{}
-}
 
 func main() {
 	// 1. 8080番portのLisnterを作成
@@ -44,7 +37,7 @@ func main() {
 	
 	// hellopb.RegisterGreetingServiceServer(s, [サーバーに登録するサービス])
 	// 第二引数にはhellopb.GreetingServiceServer型 => Helloメソッド(とmustEmbedUnimplementedGreetingServiceServerメソッド)を持つ構造体ならば代入することができる
-	pb.RegisterChatServiceServer(s, NewChatServer())
+	pb.RegisterChatServiceServer(s, pb.NewChatServer())
 
 	// 4. サーバーリフレクションの設定 (gRPCサーバーそのものから、protoファイルの情報を取得する)
 	reflection.Register(s)
