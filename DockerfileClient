@@ -1,5 +1,0 @@
-FROM node:21.7-alpine3.19
-
-WORKDIR /client
-RUN apk update
-RUN npm install -g create-vite
