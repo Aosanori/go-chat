@@ -1,0 +1,42 @@
+version: '3'
+services:
+  proto:
+    command: ./proto/scripts/protoc.sh
+    build:
+      context: .
+      dockerfile: DockerfileProto
+    volumes:
+      - .:/proto
+  backend:
+    command: ./scripts/server.sh
+    build:
+      context: .
+      dockerfile: DockerfileServer
+    volumes:
+      - ./backend:/go/src/grpc-web-react-hooks
+    ports:
+      - "9090:9090"
+    depends_on:
+      - proto
+  envoy:
+    build:
+      context: .
+      dockerfile: DockerfileEnvoy
+    ports:
+      - "8080:8080"
+    links:
+      - backend
+  client:
+    command: ["npm", "run", "dev"]
+    build:
+      context: .
+      dockerfile: DockerfileClient
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    depends_on:
+      - proto
+    ports:
+      - "5173:5173"
+    environment: 
+      - EXTEND_ESLINT=true

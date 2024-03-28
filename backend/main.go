@@ -22,7 +22,7 @@ import (
 
 func main() {
 	// 1. 8080番portのLisnterを作成
-	var port int = 8080
+	var port int = 9090
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err) // プログラムの継続的な実行が難しく、どうしよもなくなった時にプログラムを強制的に終了させるために発生するエラー
