@@ -24,8 +24,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ChatService_GetRooms_FullMethodName      = "/pb.ChatService/GetRooms"
-	ChatService_ChatBiStreams_FullMethodName = "/pb.ChatService/ChatBiStreams"
+	ChatService_GetRooms_FullMethodName         = "/pb.ChatService/GetRooms"
+	ChatService_CreateMessage_FullMethodName    = "/pb.ChatService/CreateMessage"
+	ChatService_GetMessageStream_FullMethodName = "/pb.ChatService/GetMessageStream"
 )
 
 // ChatServiceClient is the client API for ChatService service.
@@ -33,7 +34,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatServiceClient interface {
 	GetRooms(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Rooms, error)
-	ChatBiStreams(ctx context.Context, opts ...grpc.CallOption) (ChatService_ChatBiStreamsClient, error)
+	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*CreateMessageResponse, error)
+	GetMessageStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error)
 }
 
 type chatServiceClient struct {
@@ -53,31 +55,41 @@ func (c *chatServiceClient) GetRooms(ctx context.Context, in *emptypb.Empty, opt
 	return out, nil
 }
 
-func (c *chatServiceClient) ChatBiStreams(ctx context.Context, opts ...grpc.CallOption) (ChatService_ChatBiStreamsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], ChatService_ChatBiStreams_FullMethodName, opts...)
+func (c *chatServiceClient) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*CreateMessageResponse, error) {
+	out := new(CreateMessageResponse)
+	err := c.cc.Invoke(ctx, ChatService_CreateMessage_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &chatServiceChatBiStreamsClient{stream}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetMessageStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], ChatService_GetMessageStream_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &chatServiceGetMessageStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
 	return x, nil
 }
 
-type ChatService_ChatBiStreamsClient interface {
-	Send(*ChatMessageForReceiving) error
-	Recv() (*ChatMessageForSending, error)
+type ChatService_GetMessageStreamClient interface {
+	Recv() (*MessagesResponse, error)
 	grpc.ClientStream
 }
 
-type chatServiceChatBiStreamsClient struct {
+type chatServiceGetMessageStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatServiceChatBiStreamsClient) Send(m *ChatMessageForReceiving) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *chatServiceChatBiStreamsClient) Recv() (*ChatMessageForSending, error) {
-	m := new(ChatMessageForSending)
+func (x *chatServiceGetMessageStreamClient) Recv() (*MessagesResponse, error) {
+	m := new(MessagesResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -89,7 +101,8 @@ func (x *chatServiceChatBiStreamsClient) Recv() (*ChatMessageForSending, error) 
 // for forward compatibility
 type ChatServiceServer interface {
 	GetRooms(context.Context, *emptypb.Empty) (*Rooms, error)
-	ChatBiStreams(ChatService_ChatBiStreamsServer) error
+	CreateMessage(context.Context, *CreateMessageRequest) (*CreateMessageResponse, error)
+	GetMessageStream(*emptypb.Empty, ChatService_GetMessageStreamServer) error
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -100,8 +113,11 @@ type UnimplementedChatServiceServer struct {
 func (UnimplementedChatServiceServer) GetRooms(context.Context, *emptypb.Empty) (*Rooms, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRooms not implemented")
 }
-func (UnimplementedChatServiceServer) ChatBiStreams(ChatService_ChatBiStreamsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ChatBiStreams not implemented")
+func (UnimplementedChatServiceServer) CreateMessage(context.Context, *CreateMessageRequest) (*CreateMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
+}
+func (UnimplementedChatServiceServer) GetMessageStream(*emptypb.Empty, ChatService_GetMessageStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetMessageStream not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
 
@@ -134,30 +150,43 @@ func _ChatService_GetRooms_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_ChatBiStreams_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ChatServiceServer).ChatBiStreams(&chatServiceChatBiStreamsServer{stream})
-}
-
-type ChatService_ChatBiStreamsServer interface {
-	Send(*ChatMessageForSending) error
-	Recv() (*ChatMessageForReceiving, error)
-	grpc.ServerStream
-}
-
-type chatServiceChatBiStreamsServer struct {
-	grpc.ServerStream
-}
-
-func (x *chatServiceChatBiStreamsServer) Send(m *ChatMessageForSending) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *chatServiceChatBiStreamsServer) Recv() (*ChatMessageForReceiving, error) {
-	m := new(ChatMessageForReceiving)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _ChatService_CreateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMessageRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(ChatServiceServer).CreateMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_CreateMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).CreateMessage(ctx, req.(*CreateMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetMessageStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ChatServiceServer).GetMessageStream(m, &chatServiceGetMessageStreamServer{stream})
+}
+
+type ChatService_GetMessageStreamServer interface {
+	Send(*MessagesResponse) error
+	grpc.ServerStream
+}
+
+type chatServiceGetMessageStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *chatServiceGetMessageStreamServer) Send(m *MessagesResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // ChatService_ServiceDesc is the grpc.ServiceDesc for ChatService service.
@@ -171,13 +200,16 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetRooms",
 			Handler:    _ChatService_GetRooms_Handler,
 		},
+		{
+			MethodName: "CreateMessage",
+			Handler:    _ChatService_CreateMessage_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "ChatBiStreams",
-			Handler:       _ChatService_ChatBiStreams_Handler,
+			StreamName:    "GetMessageStream",
+			Handler:       _ChatService_GetMessageStream_Handler,
 			ServerStreams: true,
-			ClientStreams: true,
 		},
 	},
 	Metadata: "chat.proto",

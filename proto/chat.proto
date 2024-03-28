@@ -13,10 +13,9 @@ import "google/protobuf/timestamp.proto";
 
 // サービスの定義
 service ChatService {
-
 	rpc GetRooms(google.protobuf.Empty) returns (Rooms);
-
-	rpc ChatBiStreams (stream ChatMessageForReceiving) returns (stream ChatMessageForSending);
+	rpc CreateMessage (CreateMessageRequest) returns (CreateMessageResponse);
+	rpc GetMessageStream (google.protobuf.Empty) returns (stream MessagesResponse);
 }
 
 message Rooms {
@@ -29,14 +28,18 @@ message Message {
   string text = 3;
 }
 
-message ChatMessageForSending {
+message MessagesResponse {
 	repeated Message contents = 1;
 	repeated google.protobuf.Timestamp timestamps = 2;
 }
 
-message ChatMessageForReceiving {
+message CreateMessageRequest {
 	Message content = 1;
 }
 
+message CreateMessageResponse {
+    string result = 1;
+}
+
 // An example on grpcurl
-// grpcurl -plaintext -d '{"content": {"roomId": "0", "userId": "0", "text": "www"}}' localhost:8080 pb.ChatService.ChatBiStreams
+// grpcurl -plaintext -d '{"content": {"roomId": "0", "userId": "0", "text": "www"}}' localhost:8080 pb.ChatService.CreateMessage
