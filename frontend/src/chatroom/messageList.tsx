@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { ChatServiceClient } from "./ChatServiceClientPb";
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 import type { Message } from "./chat_pb";
+import { MessageTile } from "../components/messageTile";
 
 type Props = {
   messages: Message[];
@@ -12,12 +13,13 @@ export const Messages: React.FC<Props> = ({ messages }) => {
   return (
     <div>
       {messages.map(m => (
-        <div key={m.getText()}>{m.getText()}</div>
+        <div key={m.getText()}>
+          <MessageTile message={m}/>
+        </div>
       ))}
     </div>
   );
 };
-
 
 export const useMessages = (client: ChatServiceClient) => {
   const [messages, setMessages] = useState<Message[]>([]);

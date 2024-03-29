@@ -2,6 +2,7 @@ import "./App.css";
 import { Link, Route, Switch } from "wouter";
 import { gRPCClients } from "./gRPCClients";
 import { ChatRoom } from "./chatroom/chatroom";
+import { ButtonAppBar } from "./components/ButtonAppBar";
 
 function Nav() {
   return (
@@ -28,7 +29,7 @@ function ChatroomPage() {
   
   return (
     <div className="Chatroom">
-      <h2>Chatroom</h2>
+      <ButtonAppBar title={'Chatroom'}/>
       <ChatRoom clients={gRPCClients} />
       <Nav />
     </div>

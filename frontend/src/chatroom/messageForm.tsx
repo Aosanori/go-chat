@@ -4,10 +4,6 @@ import { useState, useCallback, type SyntheticEvent } from "react";
 import type { ChatServiceClient } from "./ChatServiceClientPb";
 import { CreateMessageRequest, Message } from "./chat_pb"; // .dから読み込むとアウト
 
-// import type { ChatServiceClient } from "ChatServiceClientPb";
-// import { ChatMessageForReceiving, ChatMessageForSending } from "chat_pb";
-
-
 export const useMessageForm = (client: ChatServiceClient) => {
   const [message, setMessage] = useState<string>("");
 
