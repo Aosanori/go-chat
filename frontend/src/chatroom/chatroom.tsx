@@ -1,6 +1,6 @@
 import type React from "react";
 import { MessageForm, useMessageForm } from "./messageForm";
-import { Messages, useMessages } from "./messageList";
+import { MessageList, useMessages } from "./messageList";
 import type { GRPCClients } from "../gRPCClients";
 
 
@@ -15,7 +15,7 @@ export const ChatRoom: React.FC<Props> = ({ clients }) => {
   return (
     <div>
       <MessageForm {...messageFormState} />
-      <Messages {...messagesState} />
+      <MessageList {...messagesState} />
     </div>
   );
 };

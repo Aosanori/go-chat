@@ -9,7 +9,7 @@ type Props = {
   messages: Message[];
 };
 
-export const Messages: React.FC<Props> = ({ messages }) => {
+export const MessageList: React.FC<Props> = ({ messages }) => {
   return (
     <div>
       {messages.map(m => (

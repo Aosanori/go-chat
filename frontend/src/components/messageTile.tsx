@@ -12,7 +12,7 @@ export const  MessageTile: React.FC<Props> = ({ message }) => {
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
           <Avatar
-            alt="Remy Sharp"
+            alt={message.getUserid()}
             src="https://hellogiggles.com/wp-content/uploads/2015/03/11/micro-pig-LondonPignic.jpg"
           />
         </ListItemAvatar>
