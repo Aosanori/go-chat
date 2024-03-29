@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CLIENT_OUTDIR=../client/src/chatroom
+CLIENT_OUTDIR=../frontend/src/chatroom
 SERVER_OUTPUT_DIR=../backend/api/chat
 
 # mkdir -p ${CLIENT_OUTDIR} ${SERVER_OUTPUT_DIR}
