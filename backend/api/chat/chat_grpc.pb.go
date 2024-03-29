@@ -80,7 +80,7 @@ func (c *chatServiceClient) GetMessageStream(ctx context.Context, in *emptypb.Em
 }
 
 type ChatService_GetMessageStreamClient interface {
-	Recv() (*MessagesResponse, error)
+	Recv() (*MessageResponse, error)
 	grpc.ClientStream
 }
 
@@ -88,8 +88,8 @@ type chatServiceGetMessageStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatServiceGetMessageStreamClient) Recv() (*MessagesResponse, error) {
-	m := new(MessagesResponse)
+func (x *chatServiceGetMessageStreamClient) Recv() (*MessageResponse, error) {
+	m := new(MessageResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -177,7 +177,7 @@ func _ChatService_GetMessageStream_Handler(srv interface{}, stream grpc.ServerSt
 }
 
 type ChatService_GetMessageStreamServer interface {
-	Send(*MessagesResponse) error
+	Send(*MessageResponse) error
 	grpc.ServerStream
 }
 
@@ -185,7 +185,7 @@ type chatServiceGetMessageStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *chatServiceGetMessageStreamServer) Send(m *MessagesResponse) error {
+func (x *chatServiceGetMessageStreamServer) Send(m *MessageResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

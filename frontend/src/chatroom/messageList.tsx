@@ -28,11 +28,13 @@ export const useMessages = (client: ChatServiceClient) => {
   useEffect(() => {
     const stream$ = client.getMessageStream(new Empty())
     stream$.on("data", m => {
-      console.log(m.getContentsList());
-      setMessages(() =>  m.getContentsList());
+      const content = m.getContent()
+      console.log(content);
+      if (content !== undefined) {
+				setMessages((state) => [...state, content]);
+			}
     });
   }, [client]);
-
   return {
     messages
   };

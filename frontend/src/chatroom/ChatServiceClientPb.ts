@@ -130,16 +130,16 @@ export class ChatServiceClient {
     '/pb.ChatService/GetMessageStream',
     grpcWeb.MethodType.SERVER_STREAMING,
     google_protobuf_empty_pb.Empty,
-    chat_pb.MessagesResponse,
+    chat_pb.MessageResponse,
     (request: google_protobuf_empty_pb.Empty) => {
       return request.serializeBinary();
     },
-    chat_pb.MessagesResponse.deserializeBinary
+    chat_pb.MessageResponse.deserializeBinary
   );
 
   getMessageStream(
     request: google_protobuf_empty_pb.Empty,
-    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<chat_pb.MessagesResponse> {
+    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<chat_pb.MessageResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
         '/pb.ChatService/GetMessageStream',

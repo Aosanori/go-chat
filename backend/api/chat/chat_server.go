@@ -25,7 +25,7 @@ func NewChatServer() *ChatServer {
 	return &ChatServer{}
 }
 
-func (s *ChatServer) CreateMessage (ctx context.Context, req *CreateMessageRequest) (*CreateMessageResponse, error) {
+func (s *ChatServer) CreateMessage(ctx context.Context, req *CreateMessageRequest) (*CreateMessageResponse, error) {
 	client := db.NewRedisClient()
 	message, _ := json.Marshal(req)
 	_ = client.Publish(ctx, req.Content.RoomId, message).Err()
@@ -38,27 +38,36 @@ func (s *ChatServer) CreateMessage (ctx context.Context, req *CreateMessageReque
 }
 
 // 一度目のアクセスで保持しているメッセージを流し、それ以降は、新しいメッセージを検知したときのみデータを送る
-func (s *ChatServer) GetMessageStream (_ *emptypb.Empty, stream ChatService_GetMessageStreamServer) error {
+func (s *ChatServer) GetMessageStream(_ *emptypb.Empty, stream ChatService_GetMessageStreamServer) error {
+	for i := range messages {
+		if err := stream.Send(&MessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
+				return err
+		}
+  }
+
 	client := db.NewRedisClient()
 	pubsub := client.Subscribe(stream.Context(), RoomId)
 	defer pubsub.Close()
+
+	// Wait for confirmation that subscription is created before publishing anything
 	_, err := pubsub.Receive(stream.Context())
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
 
+	// Listen for messages in the room
 	ch := pubsub.Channel()
+
 	// Consume messages.
 	for msg := range ch {
-			message := MessagesResponse{Contents: messages, Timestamps: timestamps};
-			err := json.Unmarshal([]byte(msg.Payload), &message)
-			if err != nil {
-					log.Fatal(err)
-			}
-			fmt.Println(msg.Channel, msg.Payload)
-			if err := stream.Send(&message); err != nil {
-					return err
-			}
+		var message MessageResponse
+		if err := json.Unmarshal([]byte(msg.Payload), &message); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(msg.Channel, msg.Payload)
+		if err := stream.Send(&message); err != nil {
+			return err
+		}
 	}
 	return nil
 }

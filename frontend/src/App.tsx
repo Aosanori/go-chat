@@ -26,7 +26,6 @@ function Home() {
 }
 
 function ChatroomPage() {
-  
   return (
     <div className="Chatroom">
       <ButtonAppBar title={'Chatroom'}/>

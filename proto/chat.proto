@@ -15,7 +15,7 @@ import "google/protobuf/timestamp.proto";
 service ChatService {
 	rpc GetRooms(google.protobuf.Empty) returns (Rooms);
 	rpc CreateMessage (CreateMessageRequest) returns (CreateMessageResponse);
-	rpc GetMessageStream (google.protobuf.Empty) returns (stream MessagesResponse);
+	rpc GetMessageStream (google.protobuf.Empty) returns (stream MessageResponse);
 }
 
 message Rooms {
@@ -28,9 +28,9 @@ message Message {
   string text = 3;
 }
 
-message MessagesResponse {
-	repeated Message contents = 1;
-	repeated google.protobuf.Timestamp timestamps = 2;
+message MessageResponse {
+	Message content = 1;
+	google.protobuf.Timestamp timestamp = 2;
 }
 
 message CreateMessageRequest {

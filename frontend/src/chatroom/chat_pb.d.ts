@@ -48,29 +48,29 @@ export namespace Message {
   }
 }
 
-export class MessagesResponse extends jspb.Message {
-  getContentsList(): Array<Message>;
-  setContentsList(value: Array<Message>): MessagesResponse;
-  clearContentsList(): MessagesResponse;
-  addContents(value?: Message, index?: number): Message;
+export class MessageResponse extends jspb.Message {
+  getContent(): Message | undefined;
+  setContent(value?: Message): MessageResponse;
+  hasContent(): boolean;
+  clearContent(): MessageResponse;
 
-  getTimestampsList(): Array<google_protobuf_timestamp_pb.Timestamp>;
-  setTimestampsList(value: Array<google_protobuf_timestamp_pb.Timestamp>): MessagesResponse;
-  clearTimestampsList(): MessagesResponse;
-  addTimestamps(value?: google_protobuf_timestamp_pb.Timestamp, index?: number): google_protobuf_timestamp_pb.Timestamp;
+  getTimestamp(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setTimestamp(value?: google_protobuf_timestamp_pb.Timestamp): MessageResponse;
+  hasTimestamp(): boolean;
+  clearTimestamp(): MessageResponse;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessagesResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: MessagesResponse): MessagesResponse.AsObject;
-  static serializeBinaryToWriter(message: MessagesResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessagesResponse;
-  static deserializeBinaryFromReader(message: MessagesResponse, reader: jspb.BinaryReader): MessagesResponse;
+  toObject(includeInstance?: boolean): MessageResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageResponse): MessageResponse.AsObject;
+  static serializeBinaryToWriter(message: MessageResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageResponse;
+  static deserializeBinaryFromReader(message: MessageResponse, reader: jspb.BinaryReader): MessageResponse;
 }
 
-export namespace MessagesResponse {
+export namespace MessageResponse {
   export type AsObject = {
-    contentsList: Array<Message.AsObject>,
-    timestampsList: Array<google_protobuf_timestamp_pb.Timestamp.AsObject>,
+    content?: Message.AsObject,
+    timestamp?: google_protobuf_timestamp_pb.Timestamp.AsObject,
   }
 }
 
