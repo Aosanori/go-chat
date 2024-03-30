@@ -13,7 +13,7 @@ import (
 )
 
 // const RoomId = "0"
-var messages []*Message = []*Message{}
+var messages []*ChatMessage = []*ChatMessage{}
 var timestamps []*timestamppb.Timestamp = []*timestamppb.Timestamp{}
 
 type ChatServer struct {
@@ -24,23 +24,23 @@ func NewChatServer() *ChatServer {
 	return &ChatServer{}
 }
 
-func (s *ChatServer) CreateMessage(ctx context.Context, req *CreateMessageRequest) (*CreateMessageResponse, error) {
+func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
 	client := db.NewRedisClient()
 	message, _ := json.Marshal(req)
 	_ = client.Publish(ctx, req.Content.RoomId, message).Err()
 
 	messages = append(messages, req.Content)
 	timestamps = append(timestamps, timestamppb.Now())
-	return &CreateMessageResponse{
+	return &CreateChatMessageResponse{
 		Result: fmt.Sprintf("Success ! %s chatroom has %d messages.", req.Content.RoomId,len(messages)),
 	}, nil
 }
 
 // 一度目のアクセスで保持しているメッセージを流し、それ以降は、新しいメッセージを検知したときのみデータを送る
-func (s *ChatServer) GetMessageStream(req *MessageRequest, stream ChatService_GetMessageStreamServer) error {
+func (s *ChatServer) GetChatMessageStream(req *GetChatMessageRequest, stream ChatService_GetChatMessageStreamServer) error {
 	RoomId := req.RoomId
 	for i := range messages {
-		if err := stream.Send(&MessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
+		if err := stream.Send(&GetChatMessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
 				return err
 		}
   }
@@ -60,7 +60,7 @@ func (s *ChatServer) GetMessageStream(req *MessageRequest, stream ChatService_Ge
 
 	// Consume messages.
 	for msg := range ch {
-		var message MessageResponse
+		var message GetChatMessageResponse
 		if err := json.Unmarshal([]byte(msg.Payload), &message); err != nil {
 			log.Fatal(err)
 		}

@@ -83,69 +83,69 @@ export class ChatServiceClient {
     this.methodDescriptorGetRooms);
   }
 
-  methodDescriptorCreateMessage = new grpcWeb.MethodDescriptor(
-    '/pb.ChatService/CreateMessage',
+  methodDescriptorCreateChatMessage = new grpcWeb.MethodDescriptor(
+    '/pb.ChatService/CreateChatMessage',
     grpcWeb.MethodType.UNARY,
-    chat_pb.CreateMessageRequest,
-    chat_pb.CreateMessageResponse,
-    (request: chat_pb.CreateMessageRequest) => {
+    chat_pb.CreateChatMessageRequest,
+    chat_pb.CreateChatMessageResponse,
+    (request: chat_pb.CreateChatMessageRequest) => {
       return request.serializeBinary();
     },
-    chat_pb.CreateMessageResponse.deserializeBinary
+    chat_pb.CreateChatMessageResponse.deserializeBinary
   );
 
-  createMessage(
-    request: chat_pb.CreateMessageRequest,
-    metadata?: grpcWeb.Metadata | null): Promise<chat_pb.CreateMessageResponse>;
+  createChatMessage(
+    request: chat_pb.CreateChatMessageRequest,
+    metadata?: grpcWeb.Metadata | null): Promise<chat_pb.CreateChatMessageResponse>;
 
-  createMessage(
-    request: chat_pb.CreateMessageRequest,
+  createChatMessage(
+    request: chat_pb.CreateChatMessageRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: chat_pb.CreateMessageResponse) => void): grpcWeb.ClientReadableStream<chat_pb.CreateMessageResponse>;
+               response: chat_pb.CreateChatMessageResponse) => void): grpcWeb.ClientReadableStream<chat_pb.CreateChatMessageResponse>;
 
-  createMessage(
-    request: chat_pb.CreateMessageRequest,
+  createChatMessage(
+    request: chat_pb.CreateChatMessageRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: chat_pb.CreateMessageResponse) => void) {
+               response: chat_pb.CreateChatMessageResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/pb.ChatService/CreateMessage',
+          '/pb.ChatService/CreateChatMessage',
         request,
         metadata || {},
-        this.methodDescriptorCreateMessage,
+        this.methodDescriptorCreateChatMessage,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/pb.ChatService/CreateMessage',
+      '/pb.ChatService/CreateChatMessage',
     request,
     metadata || {},
-    this.methodDescriptorCreateMessage);
+    this.methodDescriptorCreateChatMessage);
   }
 
-  methodDescriptorGetMessageStream = new grpcWeb.MethodDescriptor(
-    '/pb.ChatService/GetMessageStream',
+  methodDescriptorGetChatMessageStream = new grpcWeb.MethodDescriptor(
+    '/pb.ChatService/GetChatMessageStream',
     grpcWeb.MethodType.SERVER_STREAMING,
-    chat_pb.MessageRequest,
-    chat_pb.MessageResponse,
-    (request: chat_pb.MessageRequest) => {
+    chat_pb.GetChatMessageRequest,
+    chat_pb.GetChatMessageResponse,
+    (request: chat_pb.GetChatMessageRequest) => {
       return request.serializeBinary();
     },
-    chat_pb.MessageResponse.deserializeBinary
+    chat_pb.GetChatMessageResponse.deserializeBinary
   );
 
-  getMessageStream(
-    request: chat_pb.MessageRequest,
-    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<chat_pb.MessageResponse> {
+  getChatMessageStream(
+    request: chat_pb.GetChatMessageRequest,
+    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<chat_pb.GetChatMessageResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-        '/pb.ChatService/GetMessageStream',
+        '/pb.ChatService/GetChatMessageStream',
       request,
       metadata || {},
-      this.methodDescriptorGetMessageStream);
+      this.methodDescriptorGetChatMessageStream);
   }
 
 }

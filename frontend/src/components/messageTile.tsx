@@ -1,9 +1,9 @@
 import type * as React from 'react';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText} from '@mui/material';
-import type { Message } from '../chatroom/chat_pb';
+import type { ChatMessage } from '../chatroom/chat_pb';
 
 type Props = {
-  message: Message;
+  message: ChatMessage;
 };
 
 export const  MessageTile: React.FC<Props> = ({ message }) => {

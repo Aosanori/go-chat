@@ -14,35 +14,35 @@ import "google/protobuf/timestamp.proto";
 // サービスの定義
 service ChatService {
 	rpc GetRooms(google.protobuf.Empty) returns (Rooms);
-	rpc CreateMessage (CreateMessageRequest) returns (CreateMessageResponse);
-	rpc GetMessageStream (MessageRequest) returns (stream MessageResponse);
+	rpc CreateChatMessage (CreateChatMessageRequest) returns (CreateChatMessageResponse);
+	rpc GetChatMessageStream (GetChatMessageRequest) returns (stream GetChatMessageResponse);
 }
 
 message Rooms {
 	string roomId = 1;
 }
 
-message Message {
+message ChatMessage {
 	string roomId = 1;
 	string userId = 2;
   string text = 3;
 }
 
-message MessageRequest {
+message GetChatMessageRequest {
 	string roomId = 1;
 	// string userId = 2;
 }
 
-message MessageResponse {
-	Message content = 1;
+message GetChatMessageResponse {
+	ChatMessage content = 1;
 	google.protobuf.Timestamp timestamp = 2;
 }
 
-message CreateMessageRequest {
-	Message content = 1;
+message CreateChatMessageRequest {
+	ChatMessage content = 1;
 }
 
-message CreateMessageResponse {
+message CreateChatMessageResponse {
     string result = 1;
 }
 

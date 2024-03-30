@@ -1,11 +1,11 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import type { ChatServiceClient } from "./ChatServiceClientPb";
-import { MessageRequest, type Message } from "./chat_pb";
+import { GetChatMessageRequest, type ChatMessage } from "./chat_pb";
 import { MessageTile } from "../components/messageTile";
 
 type Props = {
-  messages: Message[]
+  messages: ChatMessage[]
 };
 
 export const ChatroomList: React.FC<Props> = ({ messages }) => {
@@ -21,13 +21,13 @@ export const ChatroomList: React.FC<Props> = ({ messages }) => {
 };
 
 export const useMessages = (client: ChatServiceClient, roomId: string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const messageRequest = new MessageRequest()
+    const messageRequest = new GetChatMessageRequest()
     messageRequest.setRoomid(roomId)
-    const stream$ = client.getMessageStream(messageRequest)
+    const stream$ = client.getChatMessageStream(messageRequest)
     stream$.on("data", m => {
       const content = m.getContent()
       console.log(content);

@@ -2,7 +2,7 @@
 import { useState, useCallback, type SyntheticEvent } from "react";
 
 import type { ChatServiceClient } from "./ChatServiceClientPb";
-import { CreateMessageRequest, Message } from "./chat_pb"; // .dから読み込むとアウト
+import { CreateChatMessageRequest, ChatMessage } from "./chat_pb"; // .dから読み込むとアウト
 import { Grid, TextField, Button } from "@mui/material";
 
 export const useMessageForm = (client: ChatServiceClient) => {
@@ -22,13 +22,13 @@ export const useMessageForm = (client: ChatServiceClient) => {
   const onSubmit = useCallback(
     (event: SyntheticEvent) => {
       event.preventDefault();
-      const req = new CreateMessageRequest();
-      const newMessage = new Message();
+      const req = new CreateChatMessageRequest();
+      const newMessage = new ChatMessage();
       newMessage.setRoomid("0");
       newMessage.setUserid("0");
       newMessage.setText(message);
       req.setContent(newMessage);
-      client.createMessage(req, null, res => console.log(res));
+      client.createChatMessage(req, null, res => console.log(res));
       setMessage("");
     },
     [client, message]
