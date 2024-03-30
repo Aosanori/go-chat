@@ -35,7 +35,7 @@ const (
 type ChatServiceClient interface {
 	GetRooms(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Rooms, error)
 	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*CreateMessageResponse, error)
-	GetMessageStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error)
+	GetMessageStream(ctx context.Context, in *MessageRequest, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error)
 }
 
 type chatServiceClient struct {
@@ -64,7 +64,7 @@ func (c *chatServiceClient) CreateMessage(ctx context.Context, in *CreateMessage
 	return out, nil
 }
 
-func (c *chatServiceClient) GetMessageStream(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error) {
+func (c *chatServiceClient) GetMessageStream(ctx context.Context, in *MessageRequest, opts ...grpc.CallOption) (ChatService_GetMessageStreamClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], ChatService_GetMessageStream_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (x *chatServiceGetMessageStreamClient) Recv() (*MessageResponse, error) {
 type ChatServiceServer interface {
 	GetRooms(context.Context, *emptypb.Empty) (*Rooms, error)
 	CreateMessage(context.Context, *CreateMessageRequest) (*CreateMessageResponse, error)
-	GetMessageStream(*emptypb.Empty, ChatService_GetMessageStreamServer) error
+	GetMessageStream(*MessageRequest, ChatService_GetMessageStreamServer) error
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -116,7 +116,7 @@ func (UnimplementedChatServiceServer) GetRooms(context.Context, *emptypb.Empty) 
 func (UnimplementedChatServiceServer) CreateMessage(context.Context, *CreateMessageRequest) (*CreateMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
 }
-func (UnimplementedChatServiceServer) GetMessageStream(*emptypb.Empty, ChatService_GetMessageStreamServer) error {
+func (UnimplementedChatServiceServer) GetMessageStream(*MessageRequest, ChatService_GetMessageStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetMessageStream not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
@@ -169,7 +169,7 @@ func _ChatService_CreateMessage_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _ChatService_GetMessageStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(emptypb.Empty)
+	m := new(MessageRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

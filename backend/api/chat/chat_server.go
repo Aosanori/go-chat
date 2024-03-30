@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"log"
 
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	// chatpb "backend/api/chat"
 	db "backend/db"
 )
 
-const RoomId = "0"
+// const RoomId = "0"
 var messages []*Message = []*Message{}
 var timestamps []*timestamppb.Timestamp = []*timestamppb.Timestamp{}
 
@@ -33,12 +32,13 @@ func (s *ChatServer) CreateMessage(ctx context.Context, req *CreateMessageReques
 	messages = append(messages, req.Content)
 	timestamps = append(timestamps, timestamppb.Now())
 	return &CreateMessageResponse{
-		Result: fmt.Sprintf("Success ! This chatroom has %d messages.", len(messages)),
+		Result: fmt.Sprintf("Success ! %s chatroom has %d messages.", req.Content.RoomId,len(messages)),
 	}, nil
 }
 
 // 一度目のアクセスで保持しているメッセージを流し、それ以降は、新しいメッセージを検知したときのみデータを送る
-func (s *ChatServer) GetMessageStream(_ *emptypb.Empty, stream ChatService_GetMessageStreamServer) error {
+func (s *ChatServer) GetMessageStream(req *MessageRequest, stream ChatService_GetMessageStreamServer) error {
+	RoomId := req.RoomId
 	for i := range messages {
 		if err := stream.Send(&MessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
 				return err

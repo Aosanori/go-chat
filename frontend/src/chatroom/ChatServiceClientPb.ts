@@ -129,16 +129,16 @@ export class ChatServiceClient {
   methodDescriptorGetMessageStream = new grpcWeb.MethodDescriptor(
     '/pb.ChatService/GetMessageStream',
     grpcWeb.MethodType.SERVER_STREAMING,
-    google_protobuf_empty_pb.Empty,
+    chat_pb.MessageRequest,
     chat_pb.MessageResponse,
-    (request: google_protobuf_empty_pb.Empty) => {
+    (request: chat_pb.MessageRequest) => {
       return request.serializeBinary();
     },
     chat_pb.MessageResponse.deserializeBinary
   );
 
   getMessageStream(
-    request: google_protobuf_empty_pb.Empty,
+    request: chat_pb.MessageRequest,
     metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<chat_pb.MessageResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +

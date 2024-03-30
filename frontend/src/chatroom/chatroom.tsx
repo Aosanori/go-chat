@@ -10,7 +10,7 @@ type Props = {
 
 export const ChatRoom: React.FC<Props> = ({ clients }) => {
   const messengerClient = clients.chatServiceClient;
-  const messagesState = useMessages(messengerClient);
+  const messagesState = useMessages(messengerClient, '0');
   const messageFormState = useMessageForm(messengerClient);
   return (
     <div>

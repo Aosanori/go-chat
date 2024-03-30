@@ -1,8 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import type { ChatServiceClient } from "./ChatServiceClientPb";
-import { Empty } from "google-protobuf/google/protobuf/empty_pb";
-import type { Message } from "./chat_pb";
+import { MessageRequest, type Message } from "./chat_pb";
 import { MessageTile } from "../components/messageTile";
 
 type Props = {
@@ -21,12 +20,14 @@ export const MessageList: React.FC<Props> = ({ messages }) => {
   );
 };
 
-export const useMessages = (client: ChatServiceClient) => {
+export const useMessages = (client: ChatServiceClient, roomId: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const stream$ = client.getMessageStream(new Empty())
+    const messageRequest = new MessageRequest()
+    messageRequest.setRoomid(roomId)
+    const stream$ = client.getMessageStream(messageRequest)
     stream$.on("data", m => {
       const content = m.getContent()
       console.log(content);
@@ -34,7 +35,7 @@ export const useMessages = (client: ChatServiceClient) => {
 				setMessages((state) => [...state, content]);
 			}
     });
-  }, [client]);
+  }, [client, roomId]);
   return {
     messages
   };

@@ -48,6 +48,24 @@ export namespace Message {
   }
 }
 
+export class MessageRequest extends jspb.Message {
+  getRoomid(): string;
+  setRoomid(value: string): MessageRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageRequest): MessageRequest.AsObject;
+  static serializeBinaryToWriter(message: MessageRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageRequest;
+  static deserializeBinaryFromReader(message: MessageRequest, reader: jspb.BinaryReader): MessageRequest;
+}
+
+export namespace MessageRequest {
+  export type AsObject = {
+    roomid: string,
+  }
+}
+
 export class MessageResponse extends jspb.Message {
   getContent(): Message | undefined;
   setContent(value?: Message): MessageResponse;
