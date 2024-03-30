@@ -1,8 +1,7 @@
 import "./App.css";
 import { Link, Route, Switch } from "wouter";
 import { gRPCClients } from "./gRPCClients";
-import { ChatRoom } from "./chatroom/chatroom";
-import { ButtonAppBar } from "./components/ButtonAppBar";
+import { ChatsWrapper } from "./chatroom/ChatsWrapper";
 
 function Nav() {
   return (
@@ -28,8 +27,7 @@ function Home() {
 function ChatroomPage() {
   return (
     <div className="Chatroom">
-      <ButtonAppBar title={'Chatroom'}/>
-      <ChatRoom clients={gRPCClients} />
+      <ChatsWrapper clients={gRPCClients}/>
       <Nav />
     </div>
   );

@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chatscope/chat-ui-kit-react": "^2.0.3",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@grpc/grpc-js": "^1.10.4",
@@ -52,7 +54,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.3",
+    "css-loader": "^6.10.0",
     "grpc_tools_node_protoc_ts": "^5.3.3",
-    "grpc-tools": "^1.12.4"
+    "grpc-tools": "^1.12.4",
+    "style-loader": "^3.3.4"
   }
 }

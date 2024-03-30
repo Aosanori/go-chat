@@ -5,10 +5,10 @@ import { MessageRequest, type Message } from "./chat_pb";
 import { MessageTile } from "../components/messageTile";
 
 type Props = {
-  messages: Message[];
+  messages: Message[]
 };
 
-export const MessageList: React.FC<Props> = ({ messages }) => {
+export const ChatroomList: React.FC<Props> = ({ messages }) => {
   return (
     <div>
       {messages.map(m => (
@@ -32,7 +32,7 @@ export const useMessages = (client: ChatServiceClient, roomId: string) => {
       const content = m.getContent()
       console.log(content);
       if (content !== undefined) {
-				setMessages((state) => [...state, content]);
+				setMessages((_) => [content]);
 			}
     });
   }, [client, roomId]);
