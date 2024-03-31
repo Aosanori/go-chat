@@ -13,6 +13,7 @@ import (
 )
 
 // const RoomId = "0"
+var roomIdBelongedUser map[string][]string = map[string][]string{"0": {"0", "1"}, "1": {"1", "2"}, "2": {"0", "2"}}
 var messages []*ChatMessage = []*ChatMessage{}
 var timestamps []*timestamppb.Timestamp = []*timestamppb.Timestamp{}
 
@@ -22,6 +23,12 @@ type ChatServer struct {
 
 func NewChatServer() *ChatServer {
 	return &ChatServer{}
+}
+
+func (s *ChatServer) GetRooms(ctx context.Context, req *GetRoomsRequest) (*GetRoomsResponse, error) {
+	userId := req.UserId
+	roomIds := roomIdBelongedUser[userId]
+	return &GetRoomsResponse{RoomIds: roomIds}, nil
 }
 
 func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
@@ -38,7 +45,7 @@ func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessa
 
 // 一度目のアクセスで保持しているメッセージを流し、それ以降は、新しいメッセージを検知したときのみデータを送る
 func (s *ChatServer) GetChatMessageStream(req *GetChatMessageRequest, stream ChatService_GetChatMessageStreamServer) error {
-	RoomId := req.RoomId
+	roomId := req.RoomId
 	for i := range messages {
 		if err := stream.Send(&GetChatMessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
 				return err
@@ -46,7 +53,7 @@ func (s *ChatServer) GetChatMessageStream(req *GetChatMessageRequest, stream Cha
   }
 
 	client := db.NewRedisClient()
-	pubsub := client.Subscribe(stream.Context(), RoomId)
+	pubsub := client.Subscribe(stream.Context(), roomId)
 	defer pubsub.Close()
 
 	// Wait for confirmation that subscription is created before publishing anything

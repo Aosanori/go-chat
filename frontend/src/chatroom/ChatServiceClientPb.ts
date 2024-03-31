@@ -17,7 +17,6 @@
 
 import * as grpcWeb from 'grpc-web';
 
-import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb'; // proto import: "google/protobuf/empty.proto"
 import * as chat_pb from './chat_pb'; // proto import: "chat.proto"
 
 
@@ -43,29 +42,29 @@ export class ChatServiceClient {
   methodDescriptorGetRooms = new grpcWeb.MethodDescriptor(
     '/pb.ChatService/GetRooms',
     grpcWeb.MethodType.UNARY,
-    google_protobuf_empty_pb.Empty,
-    chat_pb.Rooms,
-    (request: google_protobuf_empty_pb.Empty) => {
+    chat_pb.GetRoomsRequest,
+    chat_pb.GetRoomsResponse,
+    (request: chat_pb.GetRoomsRequest) => {
       return request.serializeBinary();
     },
-    chat_pb.Rooms.deserializeBinary
+    chat_pb.GetRoomsResponse.deserializeBinary
   );
 
   getRooms(
-    request: google_protobuf_empty_pb.Empty,
-    metadata?: grpcWeb.Metadata | null): Promise<chat_pb.Rooms>;
+    request: chat_pb.GetRoomsRequest,
+    metadata?: grpcWeb.Metadata | null): Promise<chat_pb.GetRoomsResponse>;
 
   getRooms(
-    request: google_protobuf_empty_pb.Empty,
+    request: chat_pb.GetRoomsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: chat_pb.Rooms) => void): grpcWeb.ClientReadableStream<chat_pb.Rooms>;
+               response: chat_pb.GetRoomsResponse) => void): grpcWeb.ClientReadableStream<chat_pb.GetRoomsResponse>;
 
   getRooms(
-    request: google_protobuf_empty_pb.Empty,
+    request: chat_pb.GetRoomsRequest,
     metadata?: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: chat_pb.Rooms) => void) {
+               response: chat_pb.GetRoomsResponse) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +

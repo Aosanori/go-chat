@@ -15,7 +15,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,7 +32,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatServiceClient interface {
-	GetRooms(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Rooms, error)
+	GetRooms(ctx context.Context, in *GetRoomsRequest, opts ...grpc.CallOption) (*GetRoomsResponse, error)
 	CreateChatMessage(ctx context.Context, in *CreateChatMessageRequest, opts ...grpc.CallOption) (*CreateChatMessageResponse, error)
 	GetChatMessageStream(ctx context.Context, in *GetChatMessageRequest, opts ...grpc.CallOption) (ChatService_GetChatMessageStreamClient, error)
 }
@@ -46,8 +45,8 @@ func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
 	return &chatServiceClient{cc}
 }
 
-func (c *chatServiceClient) GetRooms(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Rooms, error) {
-	out := new(Rooms)
+func (c *chatServiceClient) GetRooms(ctx context.Context, in *GetRoomsRequest, opts ...grpc.CallOption) (*GetRoomsResponse, error) {
+	out := new(GetRoomsResponse)
 	err := c.cc.Invoke(ctx, ChatService_GetRooms_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -100,7 +99,7 @@ func (x *chatServiceGetChatMessageStreamClient) Recv() (*GetChatMessageResponse,
 // All implementations must embed UnimplementedChatServiceServer
 // for forward compatibility
 type ChatServiceServer interface {
-	GetRooms(context.Context, *emptypb.Empty) (*Rooms, error)
+	GetRooms(context.Context, *GetRoomsRequest) (*GetRoomsResponse, error)
 	CreateChatMessage(context.Context, *CreateChatMessageRequest) (*CreateChatMessageResponse, error)
 	GetChatMessageStream(*GetChatMessageRequest, ChatService_GetChatMessageStreamServer) error
 	mustEmbedUnimplementedChatServiceServer()
@@ -110,7 +109,7 @@ type ChatServiceServer interface {
 type UnimplementedChatServiceServer struct {
 }
 
-func (UnimplementedChatServiceServer) GetRooms(context.Context, *emptypb.Empty) (*Rooms, error) {
+func (UnimplementedChatServiceServer) GetRooms(context.Context, *GetRoomsRequest) (*GetRoomsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRooms not implemented")
 }
 func (UnimplementedChatServiceServer) CreateChatMessage(context.Context, *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
@@ -133,7 +132,7 @@ func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
 }
 
 func _ChatService_GetRooms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetRoomsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -145,7 +144,7 @@ func _ChatService_GetRooms_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: ChatService_GetRooms_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).GetRooms(ctx, req.(*emptypb.Empty))
+		return srv.(ChatServiceServer).GetRooms(ctx, req.(*GetRoomsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

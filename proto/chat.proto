@@ -8,18 +8,22 @@ option go_package = "api/chat";
 // packageの宣言
 package pb;
 
-import "google/protobuf/empty.proto";
+// import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 // サービスの定義
 service ChatService {
-	rpc GetRooms(google.protobuf.Empty) returns (Rooms);
+	rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse);
 	rpc CreateChatMessage (CreateChatMessageRequest) returns (CreateChatMessageResponse);
 	rpc GetChatMessageStream (GetChatMessageRequest) returns (stream GetChatMessageResponse);
 }
 
-message Rooms {
-	string roomId = 1;
+message GetRoomsRequest {
+	string userId = 1;
+}
+
+message GetRoomsResponse {
+	repeated string roomIds = 1;
 }
 
 message ChatMessage {
