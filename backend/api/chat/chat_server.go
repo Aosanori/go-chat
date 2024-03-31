@@ -12,7 +12,7 @@ import (
 	db "backend/db"
 )
 
-// const RoomId = "0"
+// Dummy DB
 var roomIdBelongedUser map[string][]string = map[string][]string{"0": {"0", "1"}, "1": {"1", "2"}, "2": {"0", "2"}}
 var messages []*ChatMessage = []*ChatMessage{}
 var timestamps []*timestamppb.Timestamp = []*timestamppb.Timestamp{}

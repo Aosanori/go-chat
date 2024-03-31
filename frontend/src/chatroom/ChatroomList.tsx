@@ -1,42 +1,30 @@
 import type React from "react";
-import { useEffect, useState } from "react";
-import type { ChatServiceClient } from "./ChatServiceClientPb";
-import { GetChatMessageRequest, type ChatMessage } from "./chat_pb";
-import { MessageTile } from "../components/messageTile";
+import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText} from '@mui/material';
 
 type Props = {
-  messages: ChatMessage[]
+  chatRooms: string[]
 };
 
-export const ChatroomList: React.FC<Props> = ({ messages }) => {
+export const ChatroomList: React.FC<Props> = ({ chatRooms }) => {
   return (
     <div>
-      {messages.map(m => (
-        <div key={m.getText()}>
-          <MessageTile message={m}/>
+      {chatRooms.map(m => (
+        <div key={m}>
+          <List sx={{ backgroundColor: 'background.paper' }}>
+      <ListItem alignItems="flex-start">
+        <ListItemAvatar>
+          <Avatar
+            alt={m}
+            src="https://hellogiggles.com/wp-content/uploads/2015/03/11/micro-pig-LondonPignic.jpg"
+          />
+        </ListItemAvatar>
+        <ListItemText primary={m} />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+    </List>
         </div>
       ))}
     </div>
   );
 };
 
-export const useMessages = (client: ChatServiceClient, roomId: string) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const messageRequest = new GetChatMessageRequest()
-    messageRequest.setRoomid(roomId)
-    const stream$ = client.getChatMessageStream(messageRequest)
-    stream$.on("data", m => {
-      const content = m.getContent()
-      console.log(content);
-      if (content !== undefined) {
-				setMessages((state) => [...state, content]);
-			}
-    });
-  }, [client, roomId]);
-  return {
-    messages
-  };
-};

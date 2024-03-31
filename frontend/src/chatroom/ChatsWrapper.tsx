@@ -8,9 +8,11 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import type { GRPCClients } from '../gRPCClients';
 import { MessageForm, useMessageForm } from './messageForm';
-import { useMessages, ChatroomList } from './ChatroomList';
-import type { ChatMessage } from './chat_pb';
+import { useEffect, useState } from "react";
+import type { ChatServiceClient } from "./ChatServiceClientPb";
+import { GetChatMessageRequest, GetRoomsRequest, type ChatMessage } from "./chat_pb";
 import { Avatar } from '@mui/material';
+import { ChatroomList } from './ChatroomList';
 
 const drawerWidth = 240;
 
@@ -18,8 +20,47 @@ type Props = {
   clients: GRPCClients;
 };
 
+export const useChatRooms = (client: ChatServiceClient, userId: string) => {
+  const [chatRooms, setChatRooms] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getRoomsRequest = new GetRoomsRequest();
+    getRoomsRequest.setUserid(userId);
+    (async () => {
+      const roomIds = (
+        await client.getRooms(getRoomsRequest)
+      ).getRoomidsList();
+      setChatRooms((_) => roomIds)
+    })();
+  }, [client, userId]);
+
+  return {chatRooms};
+}
+
+export const useMessages = (client: ChatServiceClient, roomId: string) => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const messageRequest = new GetChatMessageRequest()
+    messageRequest.setRoomid(roomId)
+    const stream$ = client.getChatMessageStream(messageRequest)
+    stream$.on("data", m => {
+      const content = m.getContent()
+      console.log(content);
+      if (content !== undefined) {
+        setMessages((state) => [...state, content]);
+      }
+    });
+  }, [client, roomId]);
+  return {
+    messages
+  };
+};
+
 export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
-	const messengerClient = clients.chatServiceClient;
+  const messengerClient = clients.chatServiceClient;
+  const chatRoomsState = useChatRooms(messengerClient, '0')
   const messagesState = useMessages(messengerClient, '0');
   const messageFormState = useMessageForm(messengerClient);
 
@@ -50,7 +91,7 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
       >
         <Toolbar />
         <Divider />
-				<ChatroomList {...messagesState} />
+        <ChatroomList {...chatRoomsState} />
       </Drawer>
       <Box
         component="main"
