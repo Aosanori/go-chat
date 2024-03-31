@@ -32,7 +32,7 @@ export const useMessages = (client: ChatServiceClient, roomId: string) => {
       const content = m.getContent()
       console.log(content);
       if (content !== undefined) {
-				setMessages((_) => [content]);
+				setMessages((state) => [...state, content]);
 			}
     });
   }, [client, roomId]);

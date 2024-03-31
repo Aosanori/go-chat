@@ -9,6 +9,8 @@ import Divider from '@mui/material/Divider';
 import type { GRPCClients } from '../gRPCClients';
 import { MessageForm, useMessageForm } from './messageForm';
 import { useMessages, ChatroomList } from './ChatroomList';
+import type { ChatMessage } from './chat_pb';
+import { Avatar } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -52,13 +54,56 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-      >
+        sx={{ flexGrow: 1, 
+          bgcolor: 'background.default', 
+          p: 3,
+          // display: 'flex' 
+        }}>
         <Toolbar />
-				 
+        <ChatMessageBubble {...messagesState} />
         <MessageForm {...messageFormState} />
       </Box>
     </Box>
   );
 }
 
+type MessageType = {
+  messages: ChatMessage[]
+};
+
+const ChatMessageBubble: React.FC<MessageType> = ({ messages }) => {
+  return (
+    <div style={{ maxHeight: '80%', overflowY: 'auto' }}>
+      {messages.map((message) => {
+        return (
+          <Box
+            key={message.getText()}
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: message.getUserid() === '0' ? 'flex-end' : '',
+              marginBottom: 2,
+            }}
+          >
+            {message.getUserid() === 'other' && (
+              <Avatar
+                alt="User Avatar"
+                src="https://via.placeholder.com/48"
+                sx={{ marginRight: 2 }}
+              />
+            )}
+            <Box
+              sx={{
+                borderRadius: '4px',
+                padding: 2,
+                backgroundColor: message.getUserid() === '0' ? '#E3F2FD' : '#E0E0E0',
+              }}
+            >
+              <p style={{ fontSize: '14px' }}>{message.getText()}</p>
+            </Box>
+          </Box>
+        );
+      })}
+    </div>
+  );
+};
