@@ -133,7 +133,8 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
         }}>
         <Toolbar />
         <ChatMessageBubble messages={messagesState.messages.get(chatRoom) ?? []} />
-        <MessageForm {...messageFormState} />
+        <div ref={bottomRef} />
+      {chatRoom !== undefined ? <MessageForm {...messageFormState} /> : <></>}
       </Box>
     </Box>
   );
