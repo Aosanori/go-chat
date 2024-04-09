@@ -5,14 +5,14 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import type { GRPCClients } from '../gRPCClients';
 import { MessageForm, useMessageForm } from './messageForm';
 import { useEffect, useState } from "react";
 import type { ChatServiceClient } from "./ChatServiceClientPb";
 import { GetChatMessageRequest, GetRoomsRequest, type ChatMessage } from "./chat_pb";
-import { Avatar } from '@mui/material';
-import { ChatroomList } from './ChatroomList';
+// import { ChatroomList } from './ChatroomList';
+import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText} from '@mui/material';
+
 
 const drawerWidth = 240;
 
@@ -37,22 +37,27 @@ export const useChatRooms = (client: ChatServiceClient, userId: string) => {
   return {chatRooms};
 }
 
-export const useMessages = (client: ChatServiceClient, roomId: string) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export const useMessages = (client: ChatServiceClient, roomIds: string[]) => {
+  const [messages, setMessages] = useState<Map<string, ChatMessage[]>>(new Map());
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const messageRequest = new GetChatMessageRequest()
-    messageRequest.setRoomid(roomId)
-    const stream$ = client.getChatMessageStream(messageRequest)
-    stream$.on("data", m => {
-      const content = m.getContent()
-      console.log(content);
-      if (content !== undefined) {
-        setMessages((state) => [...state, content]);
-      }
-    });
-  }, [client, roomId]);
+    for (const roomId in roomIds){
+      const messageRequest = new GetChatMessageRequest()
+      messageRequest.setRoomid(roomId)
+      const stream$ = client.getChatMessageStream(messageRequest)
+      stream$.on("data", m => {
+        const content = m.getContent()
+        if (content !== undefined) {
+          setMessages((state) => {
+            const newState = new Map(state)
+            newState.set(roomId, [...(state.get(roomId) ?? []), content])
+						return newState;
+					});
+        }
+      });
+    }
+  }, [client, roomIds]);
   return {
     messages
   };
@@ -61,9 +66,35 @@ export const useMessages = (client: ChatServiceClient, roomId: string) => {
 export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
   const messengerClient = clients.chatServiceClient;
   const chatRoomsState = useChatRooms(messengerClient, '0')
-  const messagesState = useMessages(messengerClient, '0');
-  const messageFormState = useMessageForm(messengerClient);
-
+  const messagesState = useMessages(messengerClient, chatRoomsState.chatRooms);
+  
+  const [chatRoom, setChatRoom] = useState<string>(chatRoomsState.chatRooms[0])
+  const chatRoomListItemComponents: JSX.Element[] = [];
+  messagesState.messages.forEach((messages, roomId) => {
+    if(messages.length > 0){
+					chatRoomListItemComponents.push(
+						// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+						<div key={roomId}>
+							<List sx={{ backgroundColor: "background.paper" }}>
+								<ListItem alignItems="flex-start" onClick={() => {setChatRoom(roomId)}}>
+									<ListItemAvatar>
+										<Avatar
+											alt={roomId}
+											// src="https://hellogiggles.com/wp-content/uploads/2015/03/11/micro-pig-LondonPignic.jpg"
+										/>
+									</ListItemAvatar>
+									<ListItemText
+										primary={roomId}
+										secondary={messages[messages.length - 1].getText()}
+									/>
+								</ListItem>
+								<Divider variant="inset" component="li" />
+							</List>
+						</div>,
+					);
+				}
+  })
+  const messageFormState = useMessageForm(messengerClient, chatRoom);
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -91,7 +122,8 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
       >
         <Toolbar />
         <Divider />
-        <ChatroomList {...chatRoomsState} />
+        {/* <ChatroomList chatRooms={messagesState.messages}/> */}
+        {chatRoomListItemComponents.map(c => c)}
       </Drawer>
       <Box
         component="main"
@@ -101,7 +133,7 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
           // display: 'flex' 
         }}>
         <Toolbar />
-        <ChatMessageBubble {...messagesState} />
+        <ChatMessageBubble messages={messagesState.messages.get(chatRoom) ?? []} />
         <MessageForm {...messageFormState} />
       </Box>
     </Box>
@@ -112,10 +144,10 @@ type MessageType = {
   messages: ChatMessage[]
 };
 
-const ChatMessageBubble: React.FC<MessageType> = ({ messages }) => {
+const ChatMessageBubble: React.FC<MessageType> = ( props ) => {
   return (
     <div style={{ maxHeight: '80%', overflowY: 'auto' }}>
-      {messages.map((message) => {
+      {props.messages.map((message) => {
         return (
           <Box
             key={message.getText()}

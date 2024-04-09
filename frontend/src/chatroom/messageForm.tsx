@@ -5,7 +5,7 @@ import type { ChatServiceClient } from "./ChatServiceClientPb";
 import { CreateChatMessageRequest, ChatMessage } from "./chat_pb"; // .dから読み込むとアウト
 import { Grid, TextField, Button } from "@mui/material";
 
-export const useMessageForm = (client: ChatServiceClient) => {
+export const useMessageForm = (client: ChatServiceClient, roomId: string) => {
   const [message, setMessage] = useState<string>("");
 
   // メッセージ入力欄
@@ -24,14 +24,14 @@ export const useMessageForm = (client: ChatServiceClient) => {
       event.preventDefault();
       const req = new CreateChatMessageRequest();
       const newMessage = new ChatMessage();
-      newMessage.setRoomid("0");
+      newMessage.setRoomid(roomId);
       newMessage.setUserid("0");
       newMessage.setText(message);
       req.setContent(newMessage);
       client.createChatMessage(req, null, res => console.log(res));
       setMessage("");
     },
-    [client, message]
+    [client, roomId, message]
   );
 
   return {
