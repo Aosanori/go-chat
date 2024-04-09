@@ -122,7 +122,6 @@ export const ChatsWrapper: React.FC<Props> = ({ clients }) => {
       >
         <Toolbar />
         <Divider />
-        {/* <ChatroomList chatRooms={messagesState.messages}/> */}
         {chatRoomListItemComponents.map(c => c)}
       </Drawer>
       <Box
