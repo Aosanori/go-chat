@@ -14,8 +14,8 @@ import (
 
 // Dummy DB
 var roomIdBelongedUser map[string][]string = map[string][]string{"0": {"0", "1"}, "1": {"1", "2"}, "2": {"0", "2"}}
-var messages []*ChatMessage = []*ChatMessage{}
-var timestamps []*timestamppb.Timestamp = []*timestamppb.Timestamp{}
+var messages  map[string][]*ChatMessage = map[string][]*ChatMessage{"0": []*ChatMessage{}, "1": []*ChatMessage{}, "2": []*ChatMessage{}}
+var timestamps map[string][]*timestamppb.Timestamp = map[string][]*timestamppb.Timestamp{"0": []*timestamppb.Timestamp{}, "1": []*timestamppb.Timestamp{}, "2": []*timestamppb.Timestamp{}}
 
 type ChatServer struct {
 	ChatServiceServer
@@ -34,12 +34,19 @@ func (s *ChatServer) GetRooms(ctx context.Context, req *GetRoomsRequest) (*GetRo
 func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
 	client := db.NewRedisClient()
 	message, _ := json.Marshal(req)
-	_ = client.Publish(ctx, req.Content.RoomId, message).Err()
+	roomId := req.Content.RoomId
+	_ = client.Publish(ctx, roomId, message).Err()
 
-	messages = append(messages, req.Content)
-	timestamps = append(timestamps, timestamppb.Now())
+	oldMessages := messages[roomId]
+	newMessages := append(oldMessages, req.Content)
+	messages[roomId] = newMessages
+
+	oldTimestamps := timestamps[roomId]
+	newTimestamps := append(oldTimestamps, timestamppb.Now())
+	timestamps[roomId] = newTimestamps
+
 	return &CreateChatMessageResponse{
-		Result: fmt.Sprintf("Success ! %s chatroom has %d messages.", req.Content.RoomId,len(messages)),
+		Result: fmt.Sprintf("Success ! %s chatroom has %d messages.", roomId,len(messages)),
 	}, nil
 }
 
