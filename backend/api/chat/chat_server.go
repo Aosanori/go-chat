@@ -53,8 +53,8 @@ func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessa
 // 一度目のアクセスで保持しているメッセージを流し、それ以降は、新しいメッセージを検知したときのみデータを送る
 func (s *ChatServer) GetChatMessageStream(req *GetChatMessageRequest, stream ChatService_GetChatMessageStreamServer) error {
 	roomId := req.RoomId
-	for i := range messages {
-		if err := stream.Send(&GetChatMessageResponse{Content: messages[i], Timestamp: timestamps[i]}); err != nil {
+	for i := range messages[roomId] {
+		if err := stream.Send(&GetChatMessageResponse{Content: messages[roomId][i], Timestamp: timestamps[roomId][i]}); err != nil {
 				return err
 		}
   }
