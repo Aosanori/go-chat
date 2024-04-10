@@ -1,3 +1,0 @@
-# backend/api/chat
-api/chat/chat_server.go:57:58: cannot use messages[i] (map index expression of type []*ChatMessage) as *ChatMessage value in struct literal
-api/chat/chat_server.go:57:82: cannot use timestamps[i] (map index expression of type []*timestamppb.Timestamp) as *timestamppb.Timestamp value in struct literal
