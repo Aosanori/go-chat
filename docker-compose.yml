@@ -19,16 +19,21 @@ services:
       - "9090:9090"
     container_name: "backend"
 
-  # client:
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./client/src:/client/src
-  #     - ./client/public:/client/public
-  #   ports:
-  #     - "5173:5173"
-
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: go_database
+      MYSQL_USER: go_test
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
+    
   frontend:
     build:
       context: ./frontend
@@ -43,3 +48,7 @@ services:
     image: redis
     ports:
      - "6379:6379"
+
+volumes:
+  db-data:
+    driver: local
