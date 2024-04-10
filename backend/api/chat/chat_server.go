@@ -8,7 +8,6 @@ import (
 
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
-	// chatpb "backend/api/chat"
 	db "backend/db"
 )
 
@@ -32,6 +31,9 @@ func (s *ChatServer) GetRooms(ctx context.Context, req *GetRoomsRequest) (*GetRo
 }
 
 func (s *ChatServer) CreateChatMessage(ctx context.Context, req *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
+	mysql := db.SqlConnect()
+  defer mysql.Close()
+
 	client := db.NewRedisClient()
 	message, _ := json.Marshal(req)
 	roomId := req.Content.RoomId
